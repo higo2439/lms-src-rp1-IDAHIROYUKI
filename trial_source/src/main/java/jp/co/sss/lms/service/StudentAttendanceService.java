@@ -334,4 +334,25 @@ public class StudentAttendanceService {
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
 
+	/**
+	 * 勤怠情報（受講生入力）未入力件数取得
+	 * 
+	 * @param lmsUserId
+	 * @param trainingDate
+	 * @param deleteFlg
+	 * @return  未入力件数
+	 */
+
+	public boolean notEnterCheck(Integer lmsUserId) {
+
+		Date today = new Date();
+
+		Integer count = tStudentAttendanceMapper.notEnterCount(
+
+				lmsUserId, today, (short) 0);
+
+		return count > 0;
+
+	}
+
 }
