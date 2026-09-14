@@ -335,24 +335,13 @@ public class StudentAttendanceService {
 	}
 
 	/**
-	 * 勤怠情報（受講生入力）未入力件数取得
+	 * 過去日の勤怠未入力チェック
 	 * 
-	 * @param lmsUserId
-	 * @param trainingDate
-	 * @param deleteFlg
-	 * @return  未入力件数
+	 * @return 未入力がある場合true
 	 */
-
-	public boolean notEnterCheck(Integer lmsUserId) {
-
-		Date today = new Date();
-
-		Integer count = tStudentAttendanceMapper.notEnterCount(
-
-				lmsUserId, today, (short) 0);
-
-		return count > 0;
-
+	public boolean notEnterCheck() {
+		Integer count = tStudentAttendanceMapper.notEnterCount(loginUserDto.getCourseId(),
+				loginUserDto.getLmsUserId(), Constants.DB_FLG_FALSE);
+		return count != null && count > 0;
 	}
-
 }
