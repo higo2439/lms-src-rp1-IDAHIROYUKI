@@ -135,7 +135,8 @@ public class AttendanceController {
 	/**
 	 * 勤怠管理画面の一覧と過去日未入力フラグを設定
 	 * ログイン中の受講者の勤怠情報を取得し、画面表示用のデータ（勤怠一覧と未入力フラグ）をModelへ設定する処理
-	 * @param model
+	 * @author 井田裕之-Task.25
+	 * @param model 
 	 */
 	//	メソッド定義
 	private void setDetailAttributes(Model model) {

@@ -75,7 +75,7 @@ public class StudentAttendanceService {
 
 	/**
 	 * 過去日の勤怠未入力チェック
-	 * 
+	 * @author 井田裕之-Task.25
 	 * @return 未入力がある場合true
 	 */
 	//	メソッド定義
