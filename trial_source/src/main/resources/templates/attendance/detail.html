@@ -72,7 +72,8 @@
 			</table>
 		</div>
 	</div>
-
+<!--ページの読み込みが完了した後に実行されるJavaスクリプト -->
+<!--コントローラーからnotEnterFlgを取得しtrueの場合のみ実行-->
 	<script type="text/javascript" th:inline="javascript">
 		$(function() {
 			$("#now").text('現在の時刻は　' + getClock() + '　です。');
@@ -86,7 +87,9 @@
 			const minutes = ('0' + today.getMinutes()).slice(-2);
 			return hours + ':' + minutes;
 		}
+        
 		window.onload = function() {
+         
 			var notEnterFlg = /*[[${notEnterFlg}]]*/ false;
 			if (notEnterFlg) {
 				alert("過去日の勤怠に未入力があります。");

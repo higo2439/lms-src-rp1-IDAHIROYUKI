@@ -57,8 +57,14 @@ public interface TStudentAttendanceMapper {
 	 * @param deleteFlg
 	 * @return 未入力件数
 	 */
-	Integer notEnterCount(@Param("courseId") Integer courseId,
-			@Param("lmsUserId") Integer lmsUserId, @Param("deleteFlg") Short deleteFlg);
+	//	メソッド定義
+	Integer notEnterCount
+	//	コースIDの受け取り
+	(@Param("courseId") Integer courseId,
+			//			ユーザーIDの受け取り
+			@Param("lmsUserId") Integer lmsUserId,
+			//			削除フラグの受け取り
+			@Param("deleteFlg") Short deleteFlg);
 
 	/**
 	 * 勤怠情報（受講生入力）登録

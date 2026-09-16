@@ -134,12 +134,16 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面の一覧と過去日未入力フラグを設定
-	 * 
+	 * ログイン中の受講者の勤怠情報を取得し、画面表示用のデータ（勤怠一覧と未入力フラグ）をModelへ設定する処理
 	 * @param model
 	 */
+	//	メソッド定義
 	private void setDetailAttributes(Model model) {
+		//		AttendanceManagementDto型のリストを作成
+		//		サービスクラスのメソッド呼び出し
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		//		値渡しのためにモデルに格納
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 		model.addAttribute("notEnterFlg", studentAttendanceService.notEnterCheck());
 	}

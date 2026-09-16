@@ -7,7 +7,8 @@
 		resultType="jp.co.sss.lms.entity.TStudentAttendance">
 		SELECT *
 		FROM t_student_attendance
-		WHERE lms_user_id = #{lmsUserId}
+		WHERE lms_user_id =
+		#{lmsUserId}
 		AND delete_flg = #{deleteFlg}
 		ORDER BY training_date ASC
 	</select>
@@ -16,9 +17,11 @@
 		resultType="jp.co.sss.lms.entity.TStudentAttendance">
 		SELECT *
 		FROM t_student_attendance
-		WHERE lms_user_id = #{lmsUserId}
+		WHERE lms_user_id =
+		#{lmsUserId}
 		AND training_date = #{trainingDate}
-		AND delete_flg = #{deleteFlg}
+		AND delete_flg =
+		#{deleteFlg}
 	</select>
 
 	<select id="getAttendanceManagement"
@@ -36,27 +39,38 @@
 		t3.note,
 		t3.blank_time
 		FROM m_course t1
-		INNER JOIN m_section t2 ON t1.course_id = t2.course_id
-		LEFT OUTER JOIN t_student_attendance t3 ON t3.lms_user_id = #{lmsUserId}
-		AND cast(t2.date AS DATE) = cast(t3.training_date AS DATE)
+		INNER JOIN m_section t2 ON
+		t1.course_id = t2.course_id
+		LEFT OUTER JOIN t_student_attendance t3 ON
+		t3.lms_user_id = #{lmsUserId}
+		AND cast(t2.date AS DATE) =
+		cast(t3.training_date AS DATE)
 		WHERE
 		t1.course_id = #{courseId}
-		AND t1.delete_flg = #{deleteFlg}
+		AND
+		t1.delete_flg = #{deleteFlg}
 		ORDER BY t2.date ASC
 	</select>
 
+	<!--過去日の講義のうち、勤怠開始時刻または終了時刻が未入力になっている件数を数える -->
 	<select id="notEnterCount" resultType="java.lang.Integer">
 		SELECT COUNT(*)
 		FROM
 		m_course t1
-		INNER JOIN m_section t2 ON t1.course_id = t2.course_id
-		LEFT OUTER JOIN t_student_attendance t3 ON t3.lms_user_id = #{lmsUserId}
-		AND cast(t2.date AS DATE) = cast(t3.training_date AS DATE)
+		INNER JOIN m_section t2 ON t1.course_id
+		= t2.course_id
+		LEFT OUTER JOIN t_student_attendance t3 ON
+		t3.lms_user_id = #{lmsUserId}
+		AND cast(t2.date AS DATE) =
+		cast(t3.training_date AS DATE)
 		WHERE
 		t1.course_id = #{courseId}
-		AND t1.delete_flg = #{deleteFlg}
+		AND
+		t1.delete_flg = #{deleteFlg}
+		<!-- 今日より前の日付で判定 -->
 		AND cast(t2.date AS DATE) &lt; current_date
-		AND (t3.training_start_time IS NULL
+		AND (t3.training_start_time
+		IS NULL
 		OR t3.training_start_time = ''
 		OR t3.training_end_time IS NULL
 		OR t3.training_end_time = '')
@@ -80,7 +94,8 @@
 		last_modified_user,
 		last_modified_date,
 		blank_time
-		) VALUES (
+		)
+		VALUES (
 		#{lmsUserId},
 		#{trainingDate},
 		#{trainingStartTime},
@@ -101,9 +116,11 @@
 		parameterType="jp.co.sss.lms.entity.TStudentAttendance">
 		UPDATE t_student_attendance
 		SET
-		training_start_time = #{trainingStartTime},
+		training_start_time =
+		#{trainingStartTime},
 		training_end_time = #{trainingEndTime},
-		status = #{status},
+		status =
+		#{status},
 		note = #{note},
 		last_modified_user = #{lastModifiedUser},
 		last_modified_date = #{lastModifiedDate},

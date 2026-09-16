@@ -78,9 +78,15 @@ public class StudentAttendanceService {
 	 * 
 	 * @return 未入力がある場合true
 	 */
+	//	メソッド定義
+	//	未入力がある場合はtrue,無い場合はfalseを返す
 	public boolean notEnterCheck() {
-		Integer count = tStudentAttendanceMapper.notEnterCount(loginUserDto.getCourseId(),
-				loginUserDto.getLmsUserId(), Constants.DB_FLG_FALSE);
+		//		未入力件数を格納する変数
+		Integer count =
+				//				Mapperを利用してDBから件数を取得
+				tStudentAttendanceMapper.notEnterCount(loginUserDto.getCourseId(),
+						//						サービス→マッパー→マッパーxml
+						loginUserDto.getLmsUserId(), Constants.DB_FLG_FALSE);
 		return count != null && count > 0;
 	}
 
@@ -90,6 +96,7 @@ public class StudentAttendanceService {
 	 * @param attendanceType
 	 * @return エラーメッセージ
 	 */
+
 	public String punchCheck(Short attendanceType) {
 		Date trainingDate = attendanceUtil.getTrainingDate();
 		// 権限チェック
