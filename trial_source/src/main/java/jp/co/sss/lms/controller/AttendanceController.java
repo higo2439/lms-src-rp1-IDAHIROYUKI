@@ -37,12 +37,18 @@ public class AttendanceController {
 	 * @param courseId
 	 * @param model
 	 * @return 勤怠管理画面
+	 * @author 井田裕之 Task.25
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
-	public String index(Model model) {
-
-		setDetailAttributes(model);
+	public String index(Model model) throws ParseException {
+		//　　　　勤怠一覧の取得
+		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+		//        過去日の入力チェック
+		boolean NotEnterFlg = studentAttendanceService.notEnterCheck();
+		model.addAttribute("NotEnterFlg", NotEnterFlg);
 
 		return "attendance/detail";
 	}
@@ -64,7 +70,9 @@ public class AttendanceController {
 			String message = studentAttendanceService.setPunchIn();
 			model.addAttribute("message", message);
 		}
-		setDetailAttributes(model);
+		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		return "attendance/detail";
 	}
@@ -86,7 +94,9 @@ public class AttendanceController {
 			String message = studentAttendanceService.setPunchOut();
 			model.addAttribute("message", message);
 		}
-		setDetailAttributes(model);
+		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		return "attendance/detail";
 	}
@@ -127,26 +137,11 @@ public class AttendanceController {
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
-		setDetailAttributes(model);
-
-		return "attendance/detail";
-	}
-
-	/**
-	 * 勤怠管理画面の一覧と過去日未入力フラグを設定
-	 * ログイン中の受講者の勤怠情報を取得し、画面表示用のデータ（勤怠一覧と未入力フラグ）をModelへ設定する処理
-	 * @author 井田裕之-Task.25
-	 * @param model 
-	 */
-	//	メソッド定義
-	private void setDetailAttributes(Model model) {
-		//		AttendanceManagementDto型のリストを作成
-		//		サービスクラスのメソッド呼び出し
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-		//		値渡しのためにモデルに格納
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		model.addAttribute("notEnterFlg", studentAttendanceService.notEnterCheck());
+
+		return "attendance/detail";
 	}
 
 }

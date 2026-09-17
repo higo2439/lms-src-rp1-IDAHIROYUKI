@@ -53,27 +53,18 @@
 	</select>
 
 	<!--過去日の講義のうち、勤怠開始時刻または終了時刻が未入力になっている件数を数える -->
-	<select id="notEnterCount" resultType="java.lang.Integer">
+	<!-- 井田裕之-Task.25 -->
+	<select id="notEnterCount" resultType="Integer">
 		SELECT COUNT(*)
-		FROM
-		m_course t1
-		INNER JOIN m_section t2 ON t1.course_id
-		= t2.course_id
-		LEFT OUTER JOIN t_student_attendance t3 ON
-		t3.lms_user_id = #{lmsUserId}
-		AND cast(t2.date AS DATE) =
-		cast(t3.training_date AS DATE)
-		WHERE
-		t1.course_id = #{courseId}
-		AND
-		t1.delete_flg = #{deleteFlg}
-		<!-- 今日より前の日付で判定 -->
-		AND cast(t2.date AS DATE) &lt; current_date
-		AND (t3.training_start_time
-		IS NULL
-		OR t3.training_start_time = ''
-		OR t3.training_end_time IS NULL
-		OR t3.training_end_time = '')
+		FROM t_student_attendance
+		WHERE lms_user_id = #{lmsUserId}
+		AND delete_flg = #{deleteFlg}
+		AND <![CDATA[ training_date < #{trainingDate} ]]>
+		AND status != 1 <!-- 1: 欠席ステータス（欠席は除外） -->
+		AND(training_start_time = ''
+		OR training_end_time = ''
+		OR training_start_time IS NULL
+		OR training_end_time IS NULL)
 	</select>
 
 	<insert id="insert"

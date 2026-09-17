@@ -52,19 +52,19 @@ public interface TStudentAttendanceMapper {
 	/**
 	 * 過去日の勤怠未入力件数取得
 	 * @author 井田裕之-Task.25
-	 * @param courseId
 	 * @param lmsUserId
 	 * @param deleteFlg
+	 * @param trainingDate
 	 * @return 未入力件数
 	 */
 	//	メソッド定義
 	Integer notEnterCount
 	//	コースIDの受け取り
-	(@Param("courseId") Integer courseId,
+	(@Param("lmsUserId") Integer lmsUserId,
 			//			ユーザーIDの受け取り
-			@Param("lmsUserId") Integer lmsUserId,
+			@Param("deleteFlg") Short deleteFlg,
 			//			削除フラグの受け取り
-			@Param("deleteFlg") Short deleteFlg);
+			@Param("trainingDate") Date trainingDate);
 
 	/**
 	 * 勤怠情報（受講生入力）登録
