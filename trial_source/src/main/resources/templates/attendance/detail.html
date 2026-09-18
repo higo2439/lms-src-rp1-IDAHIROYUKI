@@ -89,9 +89,11 @@
         //ページの読み込みが完了した後に実行されるJavaスクリプト 
         //コントローラーからnotEnterFlgを取得しtrueの場合のみ実行
         //井田裕之-Task.25
+        //constとvarの違い　　const--値を変えられない　　var----途中で値を変えられる　let--途中で値を変えられる
+       //var--変数が扱いやすいがセキュリティ面においてはletのほうが優れている,constとletを使ったほうが良い-->
 		window.onload = function() {
          
-			var notEnterFlg = /*[[${notEnterFlg}]]*/ false;
+			const notEnterFlg = /*[[${notEnterFlg}]]*/ false;
 			if (notEnterFlg) {
 				alert("過去日の勤怠に未入力があります。");
 			}
