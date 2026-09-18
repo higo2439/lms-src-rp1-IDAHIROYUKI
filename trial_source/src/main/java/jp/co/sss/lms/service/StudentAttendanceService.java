@@ -86,7 +86,7 @@ public class StudentAttendanceService {
 		//フォーマットパターンを設定。
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-		//現在日付を取得。時刻を除く。
+		//現在日付を取得。時刻を除く。(フォーマット形式の調整）
 		Date date = new Date();
 		Date trainingDate = sdf.parse(sdf.format(date));
 
