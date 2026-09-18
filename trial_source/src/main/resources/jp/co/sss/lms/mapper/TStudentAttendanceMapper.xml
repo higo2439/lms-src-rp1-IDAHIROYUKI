@@ -60,6 +60,7 @@
 		WHERE lms_user_id = #{lmsUserId}
 		AND delete_flg = #{deleteFlg}
 		AND <![CDATA[ training_date < #{trainingDate} ]]>
+<!--		&lt; でもかける-->
 		AND status != 1 <!-- 1: 欠席ステータス（欠席は除外） -->
 		AND(training_start_time = ''
 		OR training_end_time = ''

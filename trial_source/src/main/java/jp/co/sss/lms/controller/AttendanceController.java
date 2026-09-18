@@ -29,6 +29,7 @@ public class AttendanceController {
 	private StudentAttendanceService studentAttendanceService;
 	@Autowired
 	private LoginUserDto loginUserDto;
+	private AttendanceForm attendanceForm;
 
 	/**
 	 * 勤怠管理画面 初期表示
@@ -37,7 +38,6 @@ public class AttendanceController {
 	 * @param courseId
 	 * @param model
 	 * @return 勤怠管理画面
-	 * @author 井田裕之 Task.25
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
@@ -46,7 +46,7 @@ public class AttendanceController {
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		//        過去日の入力チェック
+		//    井田裕之　Task.25    過去日の入力チェック 
 		boolean NotEnterFlg = studentAttendanceService.notEnterCheck();
 		model.addAttribute("NotEnterFlg", NotEnterFlg);
 
@@ -134,14 +134,28 @@ public class AttendanceController {
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
 
-		// 更新
-		String message = studentAttendanceService.update(attendanceForm);
-		model.addAttribute("message", message);
-		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+		/*
+		 * Task27
+		 */
+		List<String> errorList = studentAttendanceService.updateCheck(attendanceForm);
+		{
+			if (!errorList.isEmpty()) {
 
-		return "attendance/detail";
+				studentAttendanceService.setPulldownMaps(attendanceForm);
+				model.addAttribute("attendanceForm", attendanceForm);
+				model.addAttribute("errorList", errorList);
+				return "attendance/update";
+			}
+
+			// 更新
+			String message = studentAttendanceService.update(attendanceForm);
+			model.addAttribute("message", message);
+			List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+			model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+
+			return "attendance/detail";
+		}
+
 	}
-
 }

@@ -4,7 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -292,6 +294,36 @@ public class StudentAttendanceService {
 		return attendanceForm;
 	}
 
+	/*
+	 * Task-27
+	* @param attendanceForm 勤怠フォーム
+	* @return エラーメッセージリスト（エラーなしの場合は空）
+	*/
+	public List<String> updateCheck(AttendanceForm attendanceForm) {
+
+		Set<String> errorSet = new LinkedHashSet<>();
+		if (attendanceForm == null || attendanceForm.getAttendanceList() == null) {
+			return new ArrayList<>();
+		}
+		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
+			if (isHourMinuteMismatch(dailyAttendanceForm.getTrainingStartHour(),
+					dailyAttendanceForm.getTrainingStartMinute())) {
+				errorSet.add(messageUtil
+						.getMessage(Constants.VALID_KEY_ATTENDANCE_STARTTIMEINVALID));
+			}
+			if (isHourMinuteMismatch(dailyAttendanceForm.getTrainingEndHour(),
+					dailyAttendanceForm.getTrainingEndMinute())) {
+				errorSet.add(
+						messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_ENDTIMEINVALID));
+			}
+		}
+		return new ArrayList<>(errorSet);
+	}
+
+	public void setPulldownMaps(AttendanceForm attendanceForm) {
+		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
+	}
+
 	/**
 	 * 勤怠登録・更新処理
 	 * 
@@ -407,6 +439,16 @@ public class StudentAttendanceService {
 			return "";
 		}
 		return String.format("%02d:%02d", hour, minute);
+	}
+
+	/*
+	 * Task27
+	* @param hour 時
+	* @param minute 分
+	* @return 相関チェックエラーの場合true
+	*/
+	private boolean isHourMinuteMismatch(Integer hour, Integer minute) {
+		return (hour != null && minute == null) || (hour == null && minute != null);
 	}
 
 }
