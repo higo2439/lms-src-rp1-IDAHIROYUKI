@@ -295,7 +295,7 @@ public class StudentAttendanceService {
 	}
 
 	/*
-	 * Task-27
+	 * Task-27fff
 	* @param attendanceForm 勤怠フォーム
 	* @return エラーメッセージリスト（エラーなしの場合は空）
 	*/
