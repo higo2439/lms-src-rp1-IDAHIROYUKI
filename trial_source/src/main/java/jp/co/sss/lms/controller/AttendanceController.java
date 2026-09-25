@@ -14,11 +14,12 @@ import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
+import jp.co.sss.lms.util.AttendanceUtil;
 import jp.co.sss.lms.util.Constants;
 
 /**
  * 勤怠管理コントローラ
- * 
+ *
  * @author 東京ITスクール
  */
 @Controller
@@ -29,33 +30,34 @@ public class AttendanceController {
 	private StudentAttendanceService studentAttendanceService;
 	@Autowired
 	private LoginUserDto loginUserDto;
-	private AttendanceForm attendanceForm;
+	@Autowired
+	private AttendanceUtil attendanceUtil;
 
+	//task.25
 	/**
 	 * 勤怠管理画面 初期表示
-	 * 
-	 * @param lmsUserId
-	 * @param courseId
-	 * @param model
+	 *
+	 * @param model ビューに渡す値を格納するModel
 	 * @return 勤怠管理画面
-	 * @throws ParseException
+	 * @throws ParseException 未入力チェックでの日付変換に失敗した場合
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
 	public String index(Model model) throws ParseException {
-		//　　　　勤怠一覧の取得
+
+		// 勤怠一覧の取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		//    井田裕之　Task.25    過去日の入力チェック 
-		boolean NotEnterFlg = studentAttendanceService.notEnterCheck();
-		model.addAttribute("NotEnterFlg", NotEnterFlg);
 
+		// 井田裕之 - task.25 過去日の入力チェック
+		Boolean isNotEnterPastDate = studentAttendanceService.notEnterCheck();
+		model.addAttribute("isNotEnterPastDate", isNotEnterPastDate);
 		return "attendance/detail";
 	}
 
 	/**
 	 * 勤怠管理画面 『出勤』ボタン押下
-	 * 
+	 *
 	 * @param model
 	 * @return 勤怠管理画面
 	 */
@@ -70,6 +72,7 @@ public class AttendanceController {
 			String message = studentAttendanceService.setPunchIn();
 			model.addAttribute("message", message);
 		}
+		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
@@ -79,7 +82,7 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 『退勤』ボタン押下
-	 * 
+	 *
 	 * @param model
 	 * @return 勤怠管理画面
 	 */
@@ -94,6 +97,7 @@ public class AttendanceController {
 			String message = studentAttendanceService.setPunchOut();
 			model.addAttribute("message", message);
 		}
+		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
@@ -103,7 +107,7 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 『勤怠情報を直接編集する』リンク押下
-	 * 
+	 *
 	 * @param model
 	 * @return 勤怠情報直接変更画面
 	 */
@@ -123,39 +127,42 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
-	 * 
+	 *
 	 * @param attendanceForm
 	 * @param model
 	 * @param result
 	 * @return 勤怠管理画面
 	 * @throws ParseException
 	 */
-	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
-	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
+	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST) //更新ボタン（complete）が押された時に起動
+	public String complete(AttendanceForm attendanceForm, BindingResult result, Model model) //
 			throws ParseException {
 
-		/*
-		 * Task27
-		 */
-		List<String> errorList = studentAttendanceService.updateCheck(attendanceForm);
-		{
-			if (!errorList.isEmpty()) {
+		// Task.26 プルダウンで選ばれた時・分を、"HH:mm"形式の文字列に結合してattendanceFormに再セットする。
+		studentAttendanceService.formatConversion(attendanceForm);
 
-				studentAttendanceService.setPulldownMaps(attendanceForm);
-				model.addAttribute("attendanceForm", attendanceForm);
-				model.addAttribute("errorList", errorList);
-				return "attendance/update";
-			}
+		// task.27 井田 入力チェックの実行。
+		studentAttendanceService.updateInputCheck(attendanceForm, result);
 
-			// 更新
-			String message = studentAttendanceService.update(attendanceForm);
-			model.addAttribute("message", message);
-			List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-			model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+		if (result.hasErrors()) {
+			// 選択肢用マップを勤怠Utilから取得してFormに設定
+			attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
+			attendanceForm.setHourMap(attendanceUtil.getHourMap());
+			attendanceForm.setMinuteMap(attendanceUtil.getMinuteMap());
 
-			return "attendance/detail";
+			return "attendance/update";
 		}
 
+		// updateメソッドを呼び出してDBの勤怠データを更新し、完了メッセージを取得。modelに完了メッセージを登録。
+		String message = studentAttendanceService.update(attendanceForm);
+		model.addAttribute("message", message);
+		// 更新後の最新状態を画面に反映させるため、ログインユーザーのコースＩＤとユーザーＩＤをキーにして、勤怠一覧データをＤＢから再取得。
+		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		// 再取得した最新の勤怠一覧データを画面表示用にmodelに登録する。
+		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+
+		return "attendance/detail";
 	}
+
 }
