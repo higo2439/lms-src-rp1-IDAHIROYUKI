@@ -35,6 +35,7 @@
 						<tr>
 							<th class="w140">日付</th>
 							<th class="w300">コース内容</th>
+							<th class="w60">定時</th>
 							<th class="w100">出勤</th>
 							<th class="w100">退勤</th>
 							<th class="w80">中抜け時間</th>
@@ -61,8 +62,17 @@
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
-
+                                 
+                                 <!-- task.28 井田 定時ボタン -->
+								<td class="w60">
+									<button type="button" class="btn btn-success btn-work-on-time"
+										th:data-index="${stat.index}">定時</button>
+								</td>
+								
+								
+								
 								<!-- task.26 出勤時間の入力項目をテキストからプルダウンに変更-->
+								
 								<!-- task.27 井田 入力チェックエラーメッセージ -->
 								<td class="w100">
 									<div style="display: flex; align-items: center; gap: 4px;">
@@ -81,6 +91,10 @@
 										</select>
 									</div>
 								</td>
+								
+								
+								
+				
 								<!-- task.26 退勤時間の入力項目をテキストからプルダウンに変更-->
 								<!-- task.27 井田 入力チェックエラーメッセージ -->
 								<td class="w100">
