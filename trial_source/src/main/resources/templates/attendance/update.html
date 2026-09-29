@@ -35,7 +35,7 @@
 						<tr>
 							<th class="w140">日付</th>
 							<th class="w300">コース内容</th>
-							<th class="w60">定時</th>
+							<th class="w60"></th>
 							<th class="w100">出勤</th>
 							<th class="w100">退勤</th>
 							<th class="w80">中抜け時間</th>
@@ -65,7 +65,7 @@
                                  
                                  <!-- task.28 井田 定時ボタン -->
 								<td class="w60">
-									<button type="button" class="btn btn-success btn-work-on-time"
+									<button type="button" class="btn btn-success default-button"
 										th:data-index="${stat.index}">定時</button>
 								</td>
 								
@@ -154,6 +154,27 @@
 			});
 		});
 	</script>
+
+       <script>
+		// task.28 井田 定時ボタン押下で出退勤時間を自動設定
+		$(function() {
+			$('.default-button').on('click', function () {
+				const i = $(this).data('index');
+				const prefix = 'attendanceList[' + i + ']';
+
+				$('[name="' + prefix + '.trainingStartTimeHour"]').val('9');
+				$('[name="' + prefix + '.trainingStartTimeMinute"]').val('0');
+				$('[name="' + prefix + '.trainingEndTimeHour"]').val('18');
+				$('[name="' + prefix + '.trainingEndTimeMinute"]').val('0');
+			});
+		});
+
+	</script>
+
+
+
+
+
 
 </body>
 
